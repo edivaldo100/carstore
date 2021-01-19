@@ -109,7 +109,7 @@ mvn test all
 ```
 
 ## Histórico de lançamentos
-* 0.0.2
+* 0.0.3
      * Atualizar readme
 * 0.0.2
      * Incluir swagger
