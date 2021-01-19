@@ -156,6 +156,7 @@ public class ServiceCarImp implements ServiceCar {
 		return collectCar;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<Response<List<CarDto>>> findAll() {
 		logger.info("Lista de carros");
@@ -169,8 +170,7 @@ public class ServiceCarImp implements ServiceCar {
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			logger.info("Erro Default");
-			response.getErrors().add("Erro interno, tente mais tarde.");
-			return ResponseEntity.badRequest().body(response);
+			return (ResponseEntity<Response<List<CarDto>>>) responseErroDefault();
 		}
 	}
 
@@ -234,6 +234,7 @@ public class ServiceCarImp implements ServiceCar {
 		return findByBrand;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<Response<CarDto>> register(CarDto carDto, BindingResult result,
 			UriComponentsBuilder ucBuilder) {
@@ -255,8 +256,7 @@ public class ServiceCarImp implements ServiceCar {
 			return new ResponseEntity<Response<CarDto>>(response, headers, HttpStatus.CREATED);
 		} catch (Exception e) {
 			logger.info("Erro Default");
-			response.getErrors().add("Erro interno, tente mais tarde.");
-			return ResponseEntity.badRequest().body(response);
+			return (ResponseEntity<Response<CarDto>>) responseErroDefault();
 		}
 	}
 
@@ -282,6 +282,7 @@ public class ServiceCarImp implements ServiceCar {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<Response<CarDto>> findById(Long id) {
 		logger.info("find ID  {}", id);
@@ -298,11 +299,11 @@ public class ServiceCarImp implements ServiceCar {
 			return new ResponseEntity<Response<CarDto>>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.info("Erro find ID");
-			response.getErrors().add("Erro interno, tente mais tarde.");
-			return ResponseEntity.badRequest().body(response);
+			return (ResponseEntity<Response<CarDto>>) responseErroDefault();
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<Response<CarDto>> updateCar(Long id, CarDto carDto, BindingResult result) {
 		logger.info("update de  {}", carDto.toString());
@@ -325,8 +326,7 @@ public class ServiceCarImp implements ServiceCar {
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			logger.info("update de  {}", carDto.toString());
-			response.getErrors().add("Erro interno, tente mais tarde.");
-			return ResponseEntity.badRequest().body(response);
+			return (ResponseEntity<Response<CarDto>>) responseErroDefault();
 		}
 	}
 
@@ -337,6 +337,7 @@ public class ServiceCarImp implements ServiceCar {
 		return car;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<Response<CarDto>> updateCarPatch(Long id, CarDto carDto, BindingResult result) {
 		logger.info("updateCarPatch de  {}", carDto.toString());
@@ -357,8 +358,7 @@ public class ServiceCarImp implements ServiceCar {
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			logger.info("update de  {}", carDto.toString());
-			response.getErrors().add("Erro interno, tente mais tarde.");
-			return ResponseEntity.badRequest().body(response);
+			return (ResponseEntity<Response<CarDto>>) responseErroDefault();
 		}
 	}
 
@@ -394,6 +394,7 @@ public class ServiceCarImp implements ServiceCar {
 		return newCar;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<Response<List<CarDto>>> findByQ_(String q) {
 		logger.info("findByQ_ de  {}", q.toString());
@@ -405,7 +406,10 @@ public class ServiceCarImp implements ServiceCar {
 				CarDto converterCarToDto = converterCarToDto(c);
 				arrayList.add(converterCarToDto);
 			});
-
+			if (arrayList.isEmpty()) {
+				response.getErrors().add("Carro não encontrado.");
+				return ResponseEntity.badRequest().body(response);
+			}
 			response.setData(arrayList);
 			return ResponseEntity.ok(response);
 		} catch (RestException e) {
@@ -413,8 +417,7 @@ public class ServiceCarImp implements ServiceCar {
 			return ResponseEntity.badRequest().body(response);
 		} catch (Exception e) {
 			logger.info("findByQ_ de  {}", q.toString());
-			response.getErrors().add("Erro interno, tente mais tarde.");
-			return ResponseEntity.badRequest().body(response);
+			return (ResponseEntity<Response<List<CarDto>>>) responseErroDefault();
 		}
 	}
 
@@ -434,9 +437,13 @@ public class ServiceCarImp implements ServiceCar {
 			return new ResponseEntity<String>(HttpStatus.OK);
 		} catch (Exception e) {
 			logger.info("Erro delete");
-			response.getErrors().add("Erro interno, tente mais tarde.");
-			return ResponseEntity.badRequest().body(response);
+			return responseErroDefault();
 		}
 	}
 
+	private ResponseEntity<?> responseErroDefault() {
+		Response<?> response = new Response<>();
+		response.getErrors().add("Erro interno, tente mais tarde.");
+		return ResponseEntity.badRequest().body(response);
+	}
 }
