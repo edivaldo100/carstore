@@ -1,87 +1,87 @@
 # carstore
-projeto para simular a fabricação de carros
+projeto para simular a fabricação de carros<br>
 
-PARA BAIXAR O PROJETO git clone https://github.com/edivaldo100/carstore.git
+PARA BAIXAR O PROJETO git clone https://github.com/edivaldo100/carstore.git<br>
 
-PASSOS PARA EXECUTAR 
-2 - So executar o projeto e sua classe principal "Application" com [javaApplication ou run springBoot] 
-ou executar os testes Unitarios 
-ou mvn clean instal e java -jar carstore.jar
+PASSOS PARA EXECUTAR <br>
+2 - So executar o projeto e sua classe principal "Application" com [javaApplication ou run springBoot] <br>
+ou executar os testes Unitarios <br>
+ou mvn clean instal e java -jar carstore.jar<br>
 
-API Endpoints
+API Endpoints<br>
 
-GET /cars
-Retorna todos os veiculos
-
--------------------------------
-
-GET /cars/find?q=turbo
-Retorna todos os veiculos com esse parametro
+GET /cars<br>
+Retorna todos os veiculos<br>
 
 -------------------------------
 
-GET /cars/{id}
-Retorna o veiculos pelo id
+GET /cars/find?q=turbo<br>
+Retorna todos os veiculos com esse parametro<br>
 
 -------------------------------
 
-POST /cars/{id}
-salva veiculos
+GET /cars/{id}<br>
+Retorna o veiculos pelo id<br>
 
-body request
-{
-    "name": " turbo",
-    "description": "2 portas 1.0",
-    "model": {
-        "producer": {
-            "name": "RENAULT"
-        },
-        "brand": "NOVO CLIO 2021"
-    },
-    "created": "2021-01-08T01:24:19.251+0000",
-    "updated": "2021-01-08T01:24:19.251+0000",
-    "status": "AVAILABLE",
-    "year": 1980
-}
--------------------------------
-PATCH /cars/{id}
-Atualiza veiculos
-
-body request
-{
-    "name": " turbo",
-    "description": "4 portas 1.0"
-}
 -------------------------------
 
-PUT /cars
-atualiza veiculos
+POST /cars/{id}<br>
+salva veiculos<br>
 
-body request
-{
-    "name": " turbo",
-    "description": "2 portas 1.0",
-    "model": {
-        "producer": {
-            "name": "RENAULT"
-        },
-        "brand": "NOVO CLIO 2021"
-    },
-    "created": "2021-01-08T01:24:19.251+0000",
-    "updated": "2021-01-08T01:24:19.251+0000",
-    "status": "AVAILABLE",
-    "year": 1980
-}
+body request<br>
+{<br>
+    "name": " turbo",<br>
+    "description": "2 portas 1.0",<br>
+    "model": {<br>
+        "producer": {<br>
+            "name": "RENAULT"<br>
+        },<br>
+        "brand": "NOVO CLIO 2021"<br>
+    },<br>
+    "created": "2021-01-08T01:24:19.251+0000",<br>
+    "updated": "2021-01-08T01:24:19.251+0000",<br>
+    "status": "AVAILABLE",<br>
+    "year": 1980<br>
+}<br>
 -------------------------------
-DELET /cars/{id}
-remove carro
+PATCH /cars/{id}<br>
+Atualiza veiculos<br>
+
+body request<br>
+{<br>
+    "name": " turbo",<br>
+    "description": "4 portas 1.0"<br>
+}<br>
 -------------------------------
 
-USANDO
-H2 como base temporaria 
-RestFull para expor os serviços
-springboot para gereniar/config. a parte de inversão de controle e injeção de dependência
-maven para dependencias
+PUT /cars<br>
+atualiza veiculos<br>
+
+body request<br>
+{<br>
+    "name": " turbo",<br>
+    "description": "2 portas 1.0",<br>
+    "model": {<br>
+        "producer": {<br>
+            "name": "RENAULT"<br>
+        },<br>
+        "brand": "NOVO CLIO 2021"<br>
+    },<br>
+    "created": "2021-01-08T01:24:19.251+0000",<br>
+    "updated": "2021-01-08T01:24:19.251+0000",<br>
+    "status": "AVAILABLE",<br>
+    "year": 1980<br>
+}<br>
+-------------------------------
+DELET /cars/{id}<br>
+remove carro<br>
+-------------------------------
+
+USANDO<br>
+H2 como base temporaria <br>
+RestFull para expor os serviços<br>
+springboot para gereniar/config. a parte de inversão de controle e injeção de dependência<br>
+maven para dependencias<br>
 
 
 
