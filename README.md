@@ -109,13 +109,17 @@ mvn test all
 ```
 
 ## Histórico de lançamentos
+* 0.0.2
+     * Atualizar readme
+* 0.0.2
+     * Incluir swagger
 
 * 0.0.1
-    * Trabalho em desenvolvimento
+     * Trabalho em desenvolvimento
 
 ## Meta
 
-Seu Nome – [@Edivaldo](https://twitter.com/edivaldo100) – edivaldo100@gmail.com
+Edivaldo soares – [@Edivaldo](https://twitter.com/edivaldo100) – edivaldo100@gmail.com
 
 [https://github.com/edivaldo100/]
 
