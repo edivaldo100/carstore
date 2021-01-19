@@ -1,13 +1,37 @@
-# carstore
-projeto para simular a fabricação de carros<br>
+# Fabrica de carros
+> projeto para simular a fabricação de carros.
 
-PARA BAIXAR O PROJETO git clone https://github.com/edivaldo100/carstore.git<br>
 
-PASSOS PARA EXECUTAR <br>
-2 - So executar o projeto e sua classe principal "Application" com [javaApplication ou run springBoot] <br>
-ou executar os testes Unitarios <br>
-ou mvn clean instal e java -jar carstore.jar<br>
+[![Build Status][travis-image]][travis-url]
+[![Downloads Stats][npm-downloads]][npm-url]
 
+De um a dois parágrafos sobre o que é seu projeto e o que ele faz.
+
+![](../header.png)
+
+## Instalação
+
+OS X & Linux:
+
+```sh
+mvn clean instal e java -jar carstore.jar
+```
+
+Windows:
+
+```sh
+mvn clean instal e java -jar carstore.jar
+```
+>So executar o projeto e sua classe principal "Application" com [javaApplication ou run springBoot] <br>
+>ou executar os testes Unitarios
+
+## Documentação Swagger
+> Pode ser encontrada em -> 
+http://localhost:8080/swagger-ui.html#/controller-car
+
+![](swagger.png)
+
+## Exemplos de Uso
 API Endpoints<br>
 
 GET /cars<br>
@@ -77,11 +101,22 @@ DELET /cars/{id}<br>
 remove carro<br>
 -------------------------------
 
-USANDO<br>
-H2 como base temporaria <br>
-RestFull para expor os serviços<br>
-springboot para gereniar/config. a parte de inversão de controle e injeção de dependência<br>
-maven para dependencias<br>
+## Configuração para Desenvolvimento
 
+```sh
+mvn install
+mvn test all
+```
+
+## Histórico de lançamentos
+
+* 0.0.1
+    * Trabalho em desenvolvimento
+
+## Meta
+
+Seu Nome – [@Edivaldo](https://twitter.com/edivaldo100) – edivaldo100@gmail.com
+
+[https://github.com/edivaldo100/]
 
 
