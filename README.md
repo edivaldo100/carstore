@@ -3,7 +3,6 @@
 
 
 [![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
 
 De um a dois parágrafos sobre o que é seu projeto e o que ele faz.
 
@@ -82,6 +81,7 @@ PUT /cars<br>
 atualiza veiculos<br>
 
 body request<br>
+```
 {<br>
     "name": " turbo",<br>
     "description": "2 portas 1.0",<br>
@@ -96,6 +96,7 @@ body request<br>
     "status": "AVAILABLE",<br>
     "year": 1980<br>
 }<br>
+```
 -------------------------------
 DELET /cars/{id}<br>
 remove carro<br>
