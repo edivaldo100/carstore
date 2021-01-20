@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import com.edivaldo.carstore.entities.Car;
 import com.edivaldo.carstore.entities.Model;
 import com.edivaldo.carstore.entities.Producer;
+import com.edivaldo.carstore.exceptions.ResourceNotFoundException;
+import com.edivaldo.carstore.exceptions.RestException;
 import com.edivaldo.carstore.repository.RepositoryModel;
 import com.edivaldo.carstore.repository.RepositoryPruducer;
 import com.edivaldo.carstore.service.ServiceCar;
@@ -41,8 +43,9 @@ public class RunApp {
 	 * 
 	 * @return void
 	 * @throws FileNotFoundException
+	 * @throws ResourceNotFoundException 
 	 */
-	public void appStart() throws FileNotFoundException {
+	public void appStart() throws FileNotFoundException, RestException {
 
 		producer = repositoryPruducer.save(new Producer(ProducerEnum.FORD));
 		model = repositoryModel.save(new Model(producer, "NOVO FORD 2021"));

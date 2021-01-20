@@ -21,6 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.edivaldo.carstore.entities.Car;
 import com.edivaldo.carstore.entities.Model;
 import com.edivaldo.carstore.entities.Producer;
+import com.edivaldo.carstore.exceptions.ResourceNotFoundException;
+import com.edivaldo.carstore.exceptions.RestException;
 import com.edivaldo.carstore.repository.RepositoryCar;
 import com.edivaldo.carstore.repository.RepositoryModel;
 import com.edivaldo.carstore.repository.RepositoryPruducer;
@@ -61,13 +63,13 @@ public class TestCar {
 	}
 
 	@Before
-	public void before() {
+	public void before() throws RestException {
 		producer = repositoryPruducer.save(new Producer(ProducerEnum.FIAT));
 		model = repositoryModel.save(new Model(producer, "Uno2021"));
 		startCollectionCars();
 	}
 
-	private void startCollectionCars() {
+	private void startCollectionCars() throws RestException {
 		String name = "Uno";
 		Date created = new Date();
 		Date updated = new Date();
@@ -135,7 +137,7 @@ public class TestCar {
 	public void testDeletCars() {
 		try {
 
-			serviceCar.removeCar(car.getId());
+			serviceCar.delete(car.getId());
 			List<Car> findAllCarsNew = serviceCar.findAllCars();
 			assertTrue(!findAllCarsNew.isEmpty());
 		} catch (Exception e) {

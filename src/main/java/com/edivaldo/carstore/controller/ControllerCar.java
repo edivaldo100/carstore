@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.edivaldo.carstore.dtos.CarDto;
+import com.edivaldo.carstore.exceptions.RestException;
 import com.edivaldo.carstore.response.Response;
 import com.edivaldo.carstore.service.ServiceCar;
 
@@ -40,9 +41,10 @@ public class ControllerCar {
 	 * metodo que lista todos os carros
 	 * 
 	 * @return ResponseEntity<Response<List<CarDto>>>
+	 * @throws RestException
 	 */
 	@GetMapping
-	public ResponseEntity<Response<List<CarDto>>> listAll() {
+	public ResponseEntity<Response<List<CarDto>>> listAll() throws RestException {
 		return serviceCar.findAll();
 	}
 
@@ -51,9 +53,11 @@ public class ControllerCar {
 	 * 
 	 * @param q
 	 * @return ResponseEntity<Response<List<CarDto>>>
+	 * @throws RestException
 	 */
 	@GetMapping(value = "/find")
-	public ResponseEntity<Response<List<CarDto>>> listAllByQ(@RequestParam(required = true) String q) {
+	public ResponseEntity<Response<List<CarDto>>> listAllByQ(@RequestParam(required = true) String q)
+			throws RestException {
 		return serviceCar.findByQ_(q);
 	}
 
@@ -66,7 +70,8 @@ public class ControllerCar {
 	 * @return ResponseEntity<?>
 	 */
 	@PostMapping
-	public ResponseEntity<?> create(@RequestBody CarDto carDto, BindingResult result, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<?> create(@RequestBody CarDto carDto, BindingResult result, UriComponentsBuilder ucBuilder)
+			throws RestException {
 		return serviceCar.register(carDto, result, ucBuilder);
 	}
 
@@ -75,9 +80,10 @@ public class ControllerCar {
 	 * 
 	 * @param id
 	 * @return ResponseEntity<Response<CarDto>>
+	 * @throws RestException
 	 */
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Response<CarDto>> findById(@PathVariable("id") Long id) {
+	public ResponseEntity<Response<CarDto>> findById(@PathVariable("id") Long id) throws RestException {
 		return serviceCar.findById(id);
 	}
 
@@ -88,10 +94,11 @@ public class ControllerCar {
 	 * @param carDto
 	 * @param result
 	 * @return ResponseEntity<Response<CarDto>>
+	 * @throws RestException
 	 */
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<Response<CarDto>> updateCar(@PathVariable("id") Long id, @RequestBody CarDto carDto,
-			BindingResult result) {
+			BindingResult result) throws RestException {
 		return serviceCar.updateCar(id, carDto, result);
 	}
 
@@ -114,9 +121,10 @@ public class ControllerCar {
 	 * 
 	 * @param id
 	 * @return ResponseEntity<?>
+	 * @throws RestException
 	 */
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<?> delet(@PathVariable("id") Long id) {
+	public ResponseEntity<?> delet(@PathVariable("id") Long id) throws RestException {
 		return serviceCar.delete(id);
 	}
 }

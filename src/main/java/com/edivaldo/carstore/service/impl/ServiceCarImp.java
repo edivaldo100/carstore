@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.hibernate.ObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,8 @@ import com.edivaldo.carstore.dtos.ProducerDto;
 import com.edivaldo.carstore.entities.Car;
 import com.edivaldo.carstore.entities.Model;
 import com.edivaldo.carstore.entities.Producer;
+import com.edivaldo.carstore.exceptions.ResourceBadRequestException;
+import com.edivaldo.carstore.exceptions.ResourceNotFoundException;
 import com.edivaldo.carstore.exceptions.RestException;
 import com.edivaldo.carstore.repository.RepositoryCar;
 import com.edivaldo.carstore.repository.RepositoryModel;
@@ -71,31 +72,41 @@ public class ServiceCarImp implements ServiceCar {
 	}
 
 	@Override
-	public Car saveOrUpdateCar(Car car) {
+	public Car saveOrUpdateCar(Car car) throws RestException {
 		if (car != null) {
-			return repositoryCar.save(car);
+			if (car.getId() != null) {
+				Car findCarById = findCarById(car.getId());
+				car.setId(findCarById.getId());
+			}
+			car = repositoryCar.save(car);
 		}
-		throw new ObjectNotFoundException("OBJ Not Found!", null);
+		return car;
 	}
 
 	@Override
-	public Optional<Car> findCar(Long id) {
-		if (id != null) {
-			return repositoryCar.findById(id);
-		}
-
-		throw new ObjectNotFoundException("OBJ Not Found!", null);
+	public Car findCarById(Long id) throws RestException {
+		return repositoryCar.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Carro não encontrado para o id :: " + id));
 	}
 
 	@Override
-	public void removeCar(Long id) {
-		if (id != null) {
-			repositoryCar.deleteById(id);
-		}
+	public ResponseEntity<Response<CarDto>> findById(Long id) throws RestException {
+		logger.info("find ID  {}", id);
+		Response<CarDto> response = new Response<>();
+		CarDto converterCarToDto = converterCarToDto(findCarById(id));
+		response.setData(converterCarToDto);
+		return new ResponseEntity<Response<CarDto>>(response, HttpStatus.OK);
 	}
 
 	@Override
-	public List<Car> findByQ(String q) throws RestException {
+	public ResponseEntity<?> delete(Long id) throws RestException {
+		logger.info("deleta  car {}", id);
+		repositoryCar.delete(findCarById(id));
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@Override
+	public List<Car> findByQ(String q) throws ResourceBadRequestException {
 		if (q != null && !q.isEmpty()) {
 			return collectionsCar().filter(c -> {
 				if (c.getName().contains(q) || c.getDescription().contains(q) || c.getModel().getBrand().contains(q)
@@ -106,7 +117,22 @@ public class ServiceCarImp implements ServiceCar {
 			}).collect(Collectors.toList());
 
 		}
-		throw new RestException("Erro com parametro fornecido!");
+		throw new ResourceBadRequestException("Erro com parametro fornecido!");
+	}
+
+	@Override
+	public ResponseEntity<Response<List<CarDto>>> findByQ_(String q) throws ResourceBadRequestException {
+		logger.info("findByQ_ de  {}", q.toString());
+		Response<List<CarDto>> response = new Response<>();
+		ArrayList<CarDto> arrayList = new ArrayList<CarDto>();
+		List<Car> findByQ = findByQ(q);
+		findByQ.forEach(c -> {
+			CarDto converterCarToDto = converterCarToDto(c);
+			arrayList.add(converterCarToDto);
+		});
+
+		response.setData(arrayList);
+		return ResponseEntity.ok(response);
 	}
 
 	@Override
@@ -156,22 +182,13 @@ public class ServiceCarImp implements ServiceCar {
 		return collectCar;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ResponseEntity<Response<List<CarDto>>> findAll() {
+	public ResponseEntity<Response<List<CarDto>>> findAll() throws RestException {
 		logger.info("Lista de carros");
 		Response<List<CarDto>> response = new Response<List<CarDto>>();
-		try {
-			List<CarDto> collectCar = collectionsCar().map(car -> converterCarToDto(car))
-
-					.collect(Collectors.toList());
-
-			response.setData(collectCar);
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			logger.info("Erro Default");
-			return (ResponseEntity<Response<List<CarDto>>>) responseErroDefault();
-		}
+		List<CarDto> collectCar = collectionsCar().map(car -> converterCarToDto(car)).collect(Collectors.toList());
+		response.setData(collectCar);
+		return ResponseEntity.ok(response);
 	}
 
 	private CarDto converterCarToDto(Car car) {
@@ -234,30 +251,24 @@ public class ServiceCarImp implements ServiceCar {
 		return findByBrand;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<Response<CarDto>> register(CarDto carDto, BindingResult result,
-			UriComponentsBuilder ucBuilder) {
+			UriComponentsBuilder ucBuilder) throws RestException {
 		logger.info("cadastro  {}", carDto.toString());
 		Response<CarDto> response = new Response<>();
-		try {
 
-			validaData(carDto, result);
-			if (result.hasErrors()) {
-				logger.info("Erro na validação de Dados {}", result.getAllErrors());
-				result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
-				return ResponseEntity.badRequest().body(response);
-			}
-			Car converterDtoToCar = converterDtoToCar(carDto);
-			repositoryCar.save(converterDtoToCar);
-			response.setData(carDto);
-			HttpHeaders headers = new HttpHeaders();
-			headers.setLocation(ucBuilder.path("/api/cars/{id}").buildAndExpand(converterDtoToCar.getId()).toUri());
-			return new ResponseEntity<Response<CarDto>>(response, headers, HttpStatus.CREATED);
-		} catch (Exception e) {
-			logger.info("Erro Default");
-			return (ResponseEntity<Response<CarDto>>) responseErroDefault();
+		validaData(carDto, result);
+		if (result.hasErrors()) {
+			logger.info("Erro na validação de Dados {}", result.getAllErrors());
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return ResponseEntity.badRequest().body(response);
 		}
+		Car converterDtoToCar = converterDtoToCar(carDto);
+		repositoryCar.save(converterDtoToCar);
+		response.setData(carDto);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/api/cars/{id}").buildAndExpand(converterDtoToCar.getId()).toUri());
+		return new ResponseEntity<Response<CarDto>>(response, headers, HttpStatus.CREATED);
 	}
 
 	private void validaData(CarDto carDto, BindingResult result) {
@@ -282,52 +293,26 @@ public class ServiceCarImp implements ServiceCar {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ResponseEntity<Response<CarDto>> findById(Long id) {
-		logger.info("find ID  {}", id);
-		Response<CarDto> response = new Response<>();
-		try {
-			Optional<Car> findById = repositoryCar.findById(id);
-			if (!findById.isPresent()) {
-				response.getErrors().add("Id :" + id + " não encontrado");
-				return new ResponseEntity<Response<CarDto>>(response, HttpStatus.NOT_FOUND);
-			}
-
-			CarDto converterCarToDto = converterCarToDto(findById.get());
-			response.setData(converterCarToDto);
-			return new ResponseEntity<Response<CarDto>>(response, HttpStatus.OK);
-		} catch (Exception e) {
-			logger.info("Erro find ID");
-			return (ResponseEntity<Response<CarDto>>) responseErroDefault();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public ResponseEntity<Response<CarDto>> updateCar(Long id, CarDto carDto, BindingResult result) {
+	public ResponseEntity<Response<CarDto>> updateCar(Long id, CarDto carDto, BindingResult result)
+			throws RestException {
 		logger.info("update de  {}", carDto.toString());
 		Response<CarDto> response = new Response<>();
-		try {
 
-			Optional<Car> validaDataUpdate = validaDataUpdate(id, result);
-			validaData(carDto, result);
-			if (result.hasErrors()) {
-				logger.info("Erro na validação de Dados {}", result.getAllErrors());
-				result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
-				return ResponseEntity.badRequest().body(response);
-			}
-			Car converterDtoToCar = converterDtoToCar(carDto);
-			converterDtoToCar.setId(validaDataUpdate.get().getId());
-			Car saveCar = repositoryCar.save(converterDtoToCar);
-
-			CarDto converterCarToDto = converterCarToDto(saveCar);
-			response.setData(converterCarToDto);
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			logger.info("update de  {}", carDto.toString());
-			return (ResponseEntity<Response<CarDto>>) responseErroDefault();
+		Optional<Car> validaDataUpdate = validaDataUpdate(id, result);
+		validaData(carDto, result);
+		if (result.hasErrors()) {
+			logger.info("Erro na validação de Dados {}", result.getAllErrors());
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return ResponseEntity.badRequest().body(response);
 		}
+		Car converterDtoToCar = converterDtoToCar(carDto);
+		converterDtoToCar.setId(validaDataUpdate.get().getId());
+		Car saveCar = repositoryCar.save(converterDtoToCar);
+
+		CarDto converterCarToDto = converterCarToDto(saveCar);
+		response.setData(converterCarToDto);
+		return ResponseEntity.ok(response);
 	}
 
 	private Optional<Car> validaDataUpdate(Long id, BindingResult result) {
@@ -392,53 +377,6 @@ public class ServiceCarImp implements ServiceCar {
 		}
 
 		return newCar;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public ResponseEntity<Response<List<CarDto>>> findByQ_(String q) {
-		logger.info("findByQ_ de  {}", q.toString());
-		Response<List<CarDto>> response = new Response<>();
-		ArrayList<CarDto> arrayList = new ArrayList<CarDto>();
-		try {
-			List<Car> findByQ = findByQ(q);
-			findByQ.forEach(c -> {
-				CarDto converterCarToDto = converterCarToDto(c);
-				arrayList.add(converterCarToDto);
-			});
-			if (arrayList.isEmpty()) {
-				response.getErrors().add("Carro não encontrado.");
-				return ResponseEntity.badRequest().body(response);
-			}
-			response.setData(arrayList);
-			return ResponseEntity.ok(response);
-		} catch (RestException e) {
-			response.getErrors().add(e.getMessage());
-			return ResponseEntity.badRequest().body(response);
-		} catch (Exception e) {
-			logger.info("findByQ_ de  {}", q.toString());
-			return (ResponseEntity<Response<List<CarDto>>>) responseErroDefault();
-		}
-	}
-
-	@Override
-	public ResponseEntity<?> delete(Long id) {
-		logger.info("deleta  car {}", id);
-		Response<CarDto> response = new Response<>();
-		try {
-
-			Optional<Car> findById = repositoryCar.findById(id);
-			if (!findById.isPresent()) {
-				logger.info("Erro na validação de Dados {}");
-				response.getErrors().add("Carro não encontrado.");
-				return ResponseEntity.badRequest().body(response);
-			}
-			this.repositoryCar.delete(findById.get());
-			return new ResponseEntity<String>(HttpStatus.OK);
-		} catch (Exception e) {
-			logger.info("Erro delete");
-			return responseErroDefault();
-		}
 	}
 
 	private ResponseEntity<?> responseErroDefault() {

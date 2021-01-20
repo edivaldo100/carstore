@@ -2,6 +2,7 @@ package com.edivaldo.carstore.response;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 /**
  * Classe generica de respostas
@@ -15,8 +16,34 @@ public class Response<T> {
 	private T data;
 	private List<String> errors;
 
+	private Date timestamp;
+
+	private String details;
+
+	
+	
 	public Response() {
 	}
+	public Response(Date timestamp, List<String> errors, String details) {
+		super();
+		this.errors = errors;
+		this.timestamp = timestamp;
+		this.details = details;
+	}
+
+	
+	
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+
+
+	public String getDetails() {
+		return details;
+	}
+	
+
 
 	public T getData() {
 		return data;

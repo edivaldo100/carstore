@@ -3,7 +3,6 @@ package com.edivaldo.carstore.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,9 +29,10 @@ public interface ServiceCar {
 	 * metodo que busca um carro pelo id informado
 	 * 
 	 * @param id
-	 * @return Optional<Car>
+	 * @return Car
+	 * @throws RestException
 	 */
-	Optional<Car> findCar(Long id);
+	Car findCarById(Long id) throws RestException;
 
 	/**
 	 * metodo que busca todos os carros
@@ -45,8 +45,9 @@ public interface ServiceCar {
 	 * metodo que busca todos os carros
 	 * 
 	 * @return ResponseEntity<Response<List<CarDto>>>
+	 * @throws RestException
 	 */
-	ResponseEntity<Response<List<CarDto>>> findAll();
+	ResponseEntity<Response<List<CarDto>>> findAll() throws RestException;
 
 	/**
 	 * metodo que busca os carros por parametro informado
@@ -62,16 +63,9 @@ public interface ServiceCar {
 	 * 
 	 * @param car
 	 * @return Car
+	 * @throws RestException
 	 */
-	Car saveOrUpdateCar(Car car);
-
-	/**
-	 * metodo que remove um carros
-	 * 
-	 * @param id
-	 * @return void
-	 */
-	void removeCar(Long id);
+	Car saveOrUpdateCar(Car car) throws RestException;
 
 	/**
 	 * metodo que lista os carros vendido dos carros disponivel
@@ -108,16 +102,19 @@ public interface ServiceCar {
 	 * @param result
 	 * @param ucBuilder
 	 * @return ResponseEntity<Response<CarDto>>
+	 * @throws RestException
 	 */
-	ResponseEntity<Response<CarDto>> register(CarDto carDto, BindingResult result, UriComponentsBuilder ucBuilder);
+	ResponseEntity<Response<CarDto>> register(CarDto carDto, BindingResult result, UriComponentsBuilder ucBuilder)
+			throws RestException;
 
 	/**
 	 * metodo que bsca carro pelo id
 	 * 
 	 * @param id
 	 * @return ResponseEntity<Response<CarDto>>
+	 * @throws RestException
 	 */
-	ResponseEntity<Response<CarDto>> findById(Long id);
+	ResponseEntity<Response<CarDto>> findById(Long id) throws RestException;
 
 	/**
 	 * metodo que atualiza um carro na base
@@ -126,8 +123,9 @@ public interface ServiceCar {
 	 * @param result
 	 * @param id
 	 * @return ResponseEntity<Response<CarDto>>
+	 * @throws RestException
 	 */
-	ResponseEntity<Response<CarDto>> updateCar(Long id, CarDto carDto, BindingResult result);
+	ResponseEntity<Response<CarDto>> updateCar(Long id, CarDto carDto, BindingResult result) throws RestException;
 
 	/**
 	 * metodo que atualiza um carro na base
@@ -144,15 +142,17 @@ public interface ServiceCar {
 	 * 
 	 * @param q
 	 * @return ResponseEntity<Response<List<CarDto>>>
+	 * @throws RestException
 	 */
-	ResponseEntity<Response<List<CarDto>>> findByQ_(String q);
+	ResponseEntity<Response<List<CarDto>>> findByQ_(String q) throws RestException;
 
 	/**
 	 * metodo que apaga um carro
 	 * 
 	 * @param id
 	 * @return ResponseEntity<?>
+	 * @throws RestException
 	 */
-	ResponseEntity<?> delete(Long id);
+	ResponseEntity<?> delete(Long id) throws RestException;
 
 }
